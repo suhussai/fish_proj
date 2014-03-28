@@ -23,28 +23,39 @@ class FishArtist():
         main_fish = 'fishdish/' + str(self.f_n)
         self.AObjs = {}
         
+#        bg = pygame.image.load('fishdish/' + str(self.f_n))
+#        rect_bg = bg.get_rect()
+#        rect1 = Rect(rect_bg[0], rect_bg[1], rect_big[0], 60)
+        
+#        right_facing = pyganim.PygAnimation([(main_fish + '_right_1.png', 0.1),
+#                                             (main_fish + '_right_2.png', 0.1),
+#                                             (main_fish + '_right_3.png', 0.1),
+#                                             (main_fish + '_right_4.png', 0.1),
+#                                             (main_fish + '_right_5.png', 0.1)])
 
-        
-        right_facing = pyganim.PygAnimation([(main_fish + '_right_1.png', 0.1),
-                                             (main_fish + '_right_2.png', 0.1),
-                                             (main_fish + '_right_3.png', 0.1),
-                                             (main_fish + '_right_4.png', 0.1),
-                                             (main_fish + '_right_5.png', 0.1)])
-        
         left_facing = pyganim.PygAnimation([(main_fish + '_left_1.png', 0.1),
                                             (main_fish + '_left_2.png', 0.1),
                                             (main_fish + '_left_3.png', 0.1),
                                             (main_fish + '_left_4.png', 0.1),
                                             (main_fish + '_left_5.png', 0.1)])
-        self.AObjs['left_facing'] = left_facing
-        self.AObjs['right_facing'] = right_facing 
+
+        self.AObjs['left_facing'] = left_facing        
+        self.AObjs['right_facing'] = self.AObjs['left_facing'].getCopy()
+        self.AObjs['right_facing'].flip(True, False)
+        self.AObjs['right_facing'].makeTransformsPermanent()
+        
 
         
         moveCond = pyganim.PygConductor(self.AObjs)
         self.d = right 
         moveCond.play()
-        print("done initializing")
 
+        self.a = self.AObjs['right_facing'].getMaxSize()
+
+        self.f_rect = Rect(self.f_x, self.f_y, self.a[0],  self.a[1])
+        print(self.f_rect)
+
+        print("done initializing")
 
     def stationary_fish_movements(self, percent):
         #takes a percent chance (0, %100) of blinking while stationary
@@ -58,63 +69,89 @@ class FishArtist():
 
     def keys_pressed_response(self, k):
         #takes in the keys pressed and responds accordingly
+        self.fish_collision(None)
+
         if (k[pygame.K_RIGHT]):
-            print('right facing')
+#            print('right facing')
             self.screen.fill((200, 200, 200)) # fill screen with grey color
+
             self.f_x += self.f_rate
+            self._u_t()
+
             self.AObjs['right_facing'].blit(self.screen, (self.f_x, self.f_y))
 
         if (k[pygame.K_LEFT]):
-            print('left facing')
+#            print('left facing')
             self.screen.fill((200, 200, 200)) # fill screen with grey color
+
             self.f_x -= self.f_rate
+            self._u_t()
+
             self.AObjs['left_facing'].blit(self.screen, (self.f_x, self.f_y))
             
         if (k[pygame.K_UP]):
-            print('up facing')
+#            print('up facing')
             self.screen.fill((200, 200, 200)) # fill screen with grey color
+
             self.f_y -= self.f_rate
+            self._u_t()
+
             if self.d == right:
                 self.AObjs['right_facing'].blit(self.screen, (self.f_x, self.f_y))
             elif self.d == left:
                 self.AObjs['left_facing'].blit(self.screen, (self.f_x, self.f_y))
 
         if (k[pygame.K_DOWN]):
-            print('down facing')
+#            print('down facing')
             self.screen.fill((200, 200, 200)) # fill screen with grey color
+
             self.f_y += self.f_rate
+            self._u_t()
+
             if self.d == right:
                 self.AObjs['right_facing'].blit(self.screen, (self.f_x, self.f_y))
             elif self.d == left:
                 self.AObjs['left_facing'].blit(self.screen, (self.f_x, self.f_y))
 
     def move_right(self):
-        print('right facing')
+#        print('right facing')
         self.d = right
         self.screen.fill((200, 200, 200)) # fill screen with grey color
+
         self.f_x += self.f_rate
+        self._u_t()
+
         self.AObjs['right_facing'].blit(self.screen, (self.f_x, self.f_y))
 
     def move_left(self):
-        print('left facing')
+#        print('left facing')
         self.d = left
         self.screen.fill((200, 200, 200)) # fill screen with grey color
+
         self.f_x -= self.f_rate
+        self._u_t()
+
         self.AObjs['left_facing'].blit(self.screen, (self.f_x, self.f_y))
         
     def move_up(self):
-        print('up facing')
+#        print('up facing')
         self.screen.fill((200, 200, 200)) # fill screen with grey color
+
         self.f_y -= self.f_rate
+        self._u_t()
+
         if self.d == right:
             self.AObjs['right_facing'].blit(self.screen, (self.f_x, self.f_y))
         elif self.d == left:
             self.AObjs['left_facing'].blit(self.screen, (self.f_x, self.f_y))
 
     def move_down(self):
-        print('down facing')
+#        print('down facing')
         self.screen.fill((200, 200, 200)) # fill screen with grey color
+
         self.f_y += self.f_rate
+        self._u_t()
+
         if self.d == right:
             self.AObjs['right_facing'].blit(self.screen, (self.f_x, self.f_y))
         elif self.d == left:
@@ -143,6 +180,19 @@ class FishArtist():
 #        self.AObjs['right_facing'] = pygame.transform.scale2x(self.AObjs['right_facing'])
 #        self.AObjs['left_facing'] = pygame.transform.scale2x(self.AObjs['left_facing'])
         print('grown to twice its size')
+
+    def get_pos(self):
+        print(self.f_x)
+        print(self.f_y)
+
+    def fish_collision(self, other_fish):
+        if (self.f_rect.collidepoint(300,300)):
+            print(self.f_rect)
+            print(self.f_rect.collidepoint(300,300))
+
+    def _u_t(self):
+        self.f_rect = Rect(self.f_x, self.f_y, self.a[0],  self.a[1])
+
 
                 
                 
