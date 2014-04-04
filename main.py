@@ -83,7 +83,8 @@ class cpu_Fish_Controller():
         self.num = number_of_fishes
         self.actual_num = len(cpu_fishes.sprites())
         #randomly select four... or maybe five fishes to start with
-        self.available_sprites = ['yellow_fish', 'blue_fish', 'small_yellow_fish', 'green_fish', 'grey_fish', 'purple_fish', 'red_fish']
+        self.available_sprites = {'yellow_fish' , 'blue_fish':, 'small_yellow_fish', 'green_fish', 'grey_fish', 'purple_fish', 'red_fish'}
+        self.available_sprites_scores = {'yellow_fish':200 , 'blue_fish':150, 'small_yellow_fish':30, 'green_fish':50, 'grey_fish':80, 'purple_fish':100, 'red_fish':10}
 
         self.exreme_case_sprites = ['shark'] # ---> note we need to standardize shark
         self.cpu = [] 
@@ -98,6 +99,7 @@ class cpu_Fish_Controller():
             sp_name = self.available_sprites[i] #
             sp_direction = self.d[randint(0,1)] #randomly choose direction
             sp_speed = random.random()*10 + 5 # generally between 5 and 15
+            sp_score = self.available_sprites_scores[sp_name]
 
 
             #create instance of class
@@ -112,7 +114,7 @@ class cpu_Fish_Controller():
 
             -----------------------------
             '''
-            self.cpu.append(self.Cclass(screen, sp_name, sp_direction, sp_speed, None, random.uniform(num//windowSize[0], (num+0.5)//windowSize[0])))
+            self.cpu.append(self.Cclass(screen, sp_name, sp_direction, sp_score, sp_speed, None, random.uniform(num//windowSize[0], (num+0.5)//windowSize[0])))
             
             #add to cpu fish group
             cpu_fishes.add(self.cpu[num])
@@ -154,7 +156,7 @@ class cpu_Fish(pygame.sprite.Sprite):
 
     '''
     
-    def __init__(self, screen, fish_name, directionTo, fish_speed = randint(0,10), x = None, y = 0, fish_width = 0, fish_height = 0):
+    def __init__(self, screen, fish_name, directionTo, fish_score, fish_speed = randint(0,10), x = None, y = 0, fish_width = 0, fish_height = 0):
         #special note to the random generation of the y position
         #as well as the random generation of the fish_speed
         #as it is right now, it should generate a cpu fish at some y position between 100,300
@@ -386,7 +388,9 @@ class Fish(pygame.sprite.Sprite):
         self.screen = screen
         self.score = 0
         self.growscore = 0
-        self.scoreintervals = [ a *100 for a in(range(50))]
+        self.scoreintervals = [150, 400, 750, 1200, 1750, 2400, 3150, 4000, 4950, 6000, 7150, 8400, 9750, 11200]
+        self.scoreintervals.reverse()
+        
         #we use the same fish naming standards as before
         self.f_n = fish_name
         
