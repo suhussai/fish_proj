@@ -83,7 +83,7 @@ class cpu_Fish_Controller():
         self.num = number_of_fishes
         self.actual_num = len(cpu_fishes.sprites())
         #randomly select four... or maybe five fishes to start with
-        self.available_sprites = {'yellow_fish' , 'blue_fish':, 'small_yellow_fish', 'green_fish', 'grey_fish', 'purple_fish', 'red_fish'}
+        self.available_sprites = ['yellow_fish' , 'blue_fish', 'small_yellow_fish', 'green_fish', 'grey_fish', 'purple_fish', 'red_fish']
         self.available_sprites_scores = {'yellow_fish':200 , 'blue_fish':150, 'small_yellow_fish':30, 'green_fish':50, 'grey_fish':80, 'purple_fish':100, 'red_fish':10}
 
         self.exreme_case_sprites = ['shark'] # ---> note we need to standardize shark
@@ -131,6 +131,7 @@ class cpu_Fish_Controller():
             sp_name = self.available_sprites[i] #
             sp_direction = self.d[randint(0,1)] #randomly choose direction
             sp_speed = random.random()*10 + 5 # generally between 5 and 15
+            sp_score = self.available_sprites_scores[sp_name]
             
                 # noting that cpu fishes travelling across the same y coords
                 # and going opposite directions, we know we do not need to 
@@ -140,7 +141,7 @@ class cpu_Fish_Controller():
                 
                 #create instance of class
                 #cpu[num] = cpu_Fish(screen, sp_name, sp_direction, sp_speed)
-            self.cpu.append(self.Cclass(screen, sp_name, sp_direction, sp_speed, None, random.uniform((self.actual_num//windowSize[0])*100, ((self.actual_num+0.5)//windowSize[0])*100)))
+            self.cpu.append(self.Cclass(screen, sp_name, sp_direction, sp_score,sp_speed, None, random.uniform((self.actual_num//windowSize[0])*100, ((self.actual_num+0.5)//windowSize[0])*100)))
 
             
                 #add to cpu fish group
