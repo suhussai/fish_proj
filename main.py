@@ -384,7 +384,9 @@ class Fish(pygame.sprite.Sprite):
         #screen so we can blit in our class
         #onto the main screen
         self.screen = screen
-        
+        self.score = 0
+        self.growscore = 0
+        self.scoreintervals = [ a *100 for a in(range(50))]
         #we use the same fish naming standards as before
         self.f_n = fish_name
         
@@ -561,6 +563,21 @@ class Fish(pygame.sprite.Sprite):
             if (self.fish_main_rect.colliderect(fishes.fish_main_rect)):
 #                rl.remove(fishes.fish_main_rect) # remove that #no need to remove !!!
 #                rl.remove(self.fish_main_rect) # no need to remove
+                cpuA = fishes.fish_main_rect.width * fishes.fish_main_rect.height
+                mainA = self.fish_main_rect.width * self.fish_main_rect.height
+                
+                if cpuA > mainA:
+                    GAMEOVER = True
+                    print('GAMEOVER')
+                else:
+                    self.score += cpuA // 20
+                    if self.score % 10000 <= 200 and self.growscore != self.score:
+                        self.grow()
+                    Need_to_remove = fishes
+                    cpu_fishes.remove(Need_to_remove) #TODO: Need to redraw the background after deleting the fish
+                    #cpu_fishes.add(add_a_new_cpu(screen, available_sprites))
+                    #self.screen.blit(
+
 
                 a = self.screen.blit(fishes.fish_main_surf[fishes.fish_frame_num], fishes.fish_main_rect.topleft)
                 b = self.screen.blit(self.fish_main_surf[self.fish_frame_num], self.fish_main_rect.topleft)
@@ -584,6 +601,11 @@ class Fish(pygame.sprite.Sprite):
             f.update(3)
         if k[K_DOWN]:
             f.update(4)
+
+    def grow(self):
+        self.growscore = self.score
+        print('need to grow-------------------------------------------')
+        
 
 
 rl = []
@@ -647,7 +669,7 @@ while True:
             screen.blit(main_bg,(0,0))
             main_bg_off = False
         f.keys_pressed(pygame.key.get_pressed())
-
+        print(f.score)
     for event in pygame.event.get():
         
         #main game loop 
