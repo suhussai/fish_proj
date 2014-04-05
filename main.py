@@ -12,6 +12,16 @@ left = 'left'
 '''
 useful links:
 
+http://www.stockfreeimages.com/p1/numbers.html
+
+http://stackoverflow.com/questions/2189800/length-of-an-integer-in-python
+
+http://www.generateit.net/gradient/index.php
+
+http://www.fontspace.com/psyops/crash-numbering
+
+http://www.colorzilla.com/gradient-editor/
+
 http://shinylittlething.com/2009/07/22/pygame-and-animated-sprites-take-2/
 
 http://thepythongamebook.com/en:pygame:step016
@@ -27,6 +37,45 @@ http://www.pygame.org/docs/tut/newbieguide.html
 inventwithpython
 
 '''
+
+def num_update(screen, rect_list_to_passed_to_update, number, position, width_of_obj):
+    '''
+    updates the score counter in the top left-hand corner
+    by updating the list of rectangles to pass into pygame.display.update()
+    note: updates numbers horizontally i.e [ 2 ] [ 0 ] 
+                                           as opposed to  [ 2 ] 
+                                                          [ 0 ]
+
+    position must be a list of coords x and y
+    where x and y dictate where in the screen you want to put the number
+    '''
+    r = rect_list_to_passed_to_update
+    w = width_of_obj
+    p = position
+    n = number
+
+    if n == None:
+        #display 3 zeros
+        s = number_to_picNumber(0)
+        for i in range(3):
+            r.append(screen.blit(s, (p[0] + w*i, p[1])))
+    
+    else:
+        for i in range(len(str(n))):
+            s = number_to_picNumber(int(str(n)[i]))
+            r.append(screen.blit(s, (p[0] + w*i, p[1])))
+            
+    return r
+    
+
+def number_to_picNumber(number):
+    '''
+    returns the surface image that corresponds to number
+    '''
+    a = pygame.image.load('fishdish/number' + '_' + str(number) + '.png').convert_alpha()
+    a = pygame.transform.smoothscale(a, (30,24))
+    return a 
+
 def add_a_new_cpu(screen, available_sprites):
     Stype = random.choice(available_sprites)
     position = get_a_corner(screen)
@@ -184,7 +233,7 @@ class cpu_Fish(pygame.sprite.Sprite):
         elif self.fish_direction == left:
             self.f_x = windowSize[0]
 
-        self.f_y = y
+        self.f_y = y + 50
 
 
         '''
@@ -339,7 +388,7 @@ class cpu_Fish(pygame.sprite.Sprite):
                 self.fish_frame_num = 5 #first right facing frame
 
         bg2 = pygame.image.load(main_bg_file)
-#        bg2.fill((255,0,0)) #fills dirty with red to color to show how large rect is 
+        bg2.fill((255,0,0)) #fills dirty with red to color to show how large rect is 
         #dirty rect calc to get dimensions of the background the sprite messed up
         # calculate clean rect
 
@@ -388,6 +437,7 @@ class Fish(pygame.sprite.Sprite):
         #onto the main screen
         self.screen = screen
         self.score = 0
+        self.fishes_eaten = 0
         self.growscore = 0
         self.scoreintervals = [150, 400, 750, 1200, 1750, 2400, 3150, 4000, 4950, 6000, 7150, 8400, 9750, 11200]
         self.scoreintervals.reverse()
@@ -400,7 +450,7 @@ class Fish(pygame.sprite.Sprite):
         
         #starting x and y for fish
         self.f_x = x
-        self.f_y = y
+        self.f_y = y + 50
 
         #starting width and height of fish
         self.f_h = fish_height
@@ -477,7 +527,6 @@ class Fish(pygame.sprite.Sprite):
 
         # the bottom would bound the fish to the bounds of the window
 #        self.f_x = squeeze(self.f_x, windowSize[0] - self.f_w, self.f_w)
-#        self.f_y = squeeze(self.f_y, windowSize[1] - self.f_h, self.f_h)
 
         self.fish_main_rect.topleft = (self.f_x, self.f_y)
 
@@ -489,9 +538,10 @@ class Fish(pygame.sprite.Sprite):
         if (var[0] + var[2]) > windowSize[0]:
             self.f_x = (var[0] + var[2]) % windowSize[0]
             #self.f_y = (var[1] + var[3]) % windowSize[1]
-            self.fish_main_rect.topleft = (self.f_x, self.f_y)
 
             print('it left from the x side')
+
+        '''
         if (var[1] + var[3]) > windowSize[1]:
             #self.f_x = (var[0] + var[2]) % windowSize[0]
             self.f_y = (var[1] + var[3]) % windowSize[1]
@@ -499,19 +549,24 @@ class Fish(pygame.sprite.Sprite):
 
             print('it came from above!!!')
 
-
+        '''
         if (var[0]) < 0:
             self.f_x =  windowSize[0] - var[2]
             #self.f_y = (var[1] + var[3]) % windowSize[1]
             self.fish_main_rect.topleft = (self.f_x, self.f_y)
 
             print('it left from the x side')
+        '''
         if (var[1]) < 0:
             #self.f_x = (var[0] + var[2]) % windowSize[0]
             self.f_y =  windowSize[1] - var[3]
             self.fish_main_rect.topleft = (self.f_x, self.f_y)
 
             print('it came from above!!!')
+        '''
+
+        self.f_y = squeeze(self.f_y, windowSize[1], self.f_h)
+        self.fish_main_rect.topleft = (self.f_x, self.f_y)
 
     
         self.blito()
@@ -521,7 +576,7 @@ class Fish(pygame.sprite.Sprite):
         #displays the main_rect fish frame and handles the updating of the frame count
         #at the topleft coordinates of the fish_rect of the instance of the fish
 
-        bg2 = pygame.image.load(main_bg_file)
+#        bg2 = pygame.image.load(main_bg_file)
 #        bg2.fill((255,0,0)) #fills dirty with red to color to show how large rect is 
 
         #blit 
@@ -542,8 +597,8 @@ class Fish(pygame.sprite.Sprite):
         print('fish rect coords left' + str(self.fish_main_rect.right))
         print('fish rect coords right' + str(self.fish_main_rect.left))
         print('bg2.get rect'+str(bg2.get_rect()))
-        '''
 
+        '''
         #frame handling 
         if self.fish_direction == right:
             self.fish_frame_num += 1
@@ -556,7 +611,7 @@ class Fish(pygame.sprite.Sprite):
                 self.fish_frame_num = 5 #first right facing frame
 
 
-        dirtyrect = bg2.subsurface(self.fish_main_rect)
+#        dirtyrect = bg2.subsurface(self.fish_main_rect)
 
         # we need to do some editions to the fish rect when calculating the dirty rect around 
         # this is to ensure that no traces of the fish get eft on
@@ -576,6 +631,7 @@ class Fish(pygame.sprite.Sprite):
                     print('GAMEOVER')
                 else:
                     self.score += cpuA // 20
+                    self.fishes_eaten += 1
                     if self.score % 10000 <= 200 and self.growscore != self.score:
                         self.grow()
                     Need_to_remove = fishes
@@ -618,14 +674,17 @@ rl = []
 bg_file = 'fishdish/fishtitle.png' # for starting screen background
 background = pygame.image.load(bg_file)
 
-#load up main surface with the height and width of the starting background image
-screen = pygame.display.set_mode([background.get_width(), background.get_height()], 0 , 32)
 
-main_bg_file = 'fishdish/fishtitle.png' # for game screen background
+windowSize = [background.get_width(), background.get_height()]
+
+
+#load up main surface with the height and width of the starting background image
+screen = pygame.display.set_mode([windowSize[0], windowSize[1]], 0 , 32)
+
+main_bg_file = 'fishdish/game_bg.png' # for game screen background
 main_bg = pygame.image.load(main_bg_file)
 
 pygame.init()
-windowSize = [background.get_width(), background.get_height()]
 
 pygame.display.set_caption("FISH GAME")
 
@@ -642,25 +701,13 @@ f = Fish(screen, 'yellow_fish')
 
 fc = cpu_Fish_Controller(5, cpu_Fish)
 
-
-#cpu_f1 = cpu_Fish(screen, 'red_fish', left, 5, 0, 200)
-#cpu_f2 = cpu_Fish(screen, 'blue_fish', right, 5, 0, 200)
-#cpu_f3 = cpu_Fish(screen, 'yellow_fish', right, 10,0,randint(0,200))
-#cpu_f4 = cpu_Fish(screen, 'small_yellow_fish', right, 10,0,randint(0,200))
-#cpu_f5 = cpu_Fish(screen, 'purple_fish', right, 10,0,randint(0,200))
-
-#cpu_fishes.add(cpu_f1)
-#cpu_fishes.add(cpu_f2)
-#cpu_fishes.add(cpu_f3)
-#cpu_fishes.add(cpu_f4)
-#cpu_fishes.add(cpu_f5)
-#add f fish to the main_fish sprite group
 main_fish.add(f)
 
 start_screen = True
 game = False
             
 clock = pygame.time.Clock()
+
 
 while True:
     if start_screen:
@@ -670,15 +717,20 @@ while True:
         main_bg_off = True
 
     if game:
+
         if main_bg_off:
-            screen.blit(main_bg,(0,0))
+            screen = pygame.display.set_mode([windowSize[0], windowSize[1] + 50], 0 , 32)
+            screen.blit(main_bg, (0,0))
+            print('blitted main_bg')
+            pygame.display.update()
+#            pygame.time.delay(1000)
             main_bg_off = False
         f.keys_pressed(pygame.key.get_pressed())
         print(f.score)
     for event in pygame.event.get():
         
         #main game loop 
-        # interesting stuff happens here
+        #interesting stuff happens here
 
         if event.type == QUIT or (event.type == pygame.KEYDOWN and event.key == K_SPACE):
             pygame.quit()
@@ -690,6 +742,7 @@ while True:
         if event.type == pygame.KEYDOWN and event.key == K_LEFT:
             f.fish_direction = left
             f.update(2)
+
         if event.type == pygame.KEYDOWN and event.key == K_UP:
             f.update(3)
         if event.type == pygame.KEYDOWN and event.key == K_DOWN:
@@ -711,28 +764,9 @@ while True:
         fc.keep_updated()
         cpu_fishes.update()
         main_fish.update()
+        rl = num_update(screen, rl, f.score, [70, 0], 30) 
+        rl = num_update(screen, rl, f.fishes_eaten, [70, 25], 30) 
         
-
-        '''
-        #mind you there is no need for this, 
-        #removing of the cpu fishes is already
-        #done in the update method of the cpu_Fish class
-        cpulist = cpu_fishes.sprites()
-        for fish in cpulist:
-            if fish.get_f_y() > 300:
-                cpu_fishes.remove(fish)
-                cpu_fishes.add(add_a_new_cpu(screen, available_sprites))
-            elif fish.get_f_y() < -60:
-                cpu_fishes.remove(fish)
-                cpu_fishes.add(add_a_new_cpu(screen, available_sprites))
-            if fish.get_f_x() > 470:
-                cpu_fishes.remove(fish)
-                cpu_fishes.add(add_a_new_cpu(screen, available_sprites))
-            elif fish.get_f_x() < -60:
-                cpu_fishes.remove(fish)
-                cpu_fishes.add(add_a_new_cpu(screen, available_sprites))
-#        print(rl)
-        '''
         pygame.display.update(rl)
         rl = []
 
