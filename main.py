@@ -745,7 +745,7 @@ rl = []
 bg_file = 'fishdish/fishtitle.png' # for starting screen background
 background = pygame.image.load(bg_file)
 
-bg_file_mouse_over_start = 'fishdish/shark_left.png'
+bg_file_mouse_over_start = 'fishdish/title_highlight_button.png'
 mouse_over_start = pygame.image.load(bg_file_mouse_over_start)
 
 
@@ -804,8 +804,7 @@ while True:
         for event in pygame.event.get(): # get events
             Mouse_pos = pygame.mouse.get_pos()
             if 187 <= Mouse_pos[0] <= 257 and 257 <= Mouse_pos[1] <= 305: #If our mouse is on the button display the new button
-                print("yes")
-                screen.blit(mouse_over_start,(187,257))
+                screen.blit(mouse_over_start,(186,258))
                 if event.type == MOUSEBUTTONDOWN: #check if they are mouse click
                     if event.button == 1: #check if it is a left button click
                         start_screen = False
