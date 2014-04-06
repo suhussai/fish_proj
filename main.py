@@ -238,7 +238,7 @@ class cpu_Fish(pygame.sprite.Sprite):
         #screen so we can blit in our class
         #onto the main screen
         self.screen = screen
-
+        self.fish_score = fish_score
 
         
         #we use the same fish naming standards as before
@@ -327,16 +327,6 @@ class cpu_Fish(pygame.sprite.Sprite):
         # 2: from right to left
 
 
-        if self.fish_direction == right:
-            self.fish_frame_num += 1
-            if self.fish_frame_num >= 5:
-                self.fish_frame_num = 0 #first right facing frame
-
-        elif self.fish_direction == left:
-            self.fish_frame_num += 1
-            if self.fish_frame_num >= 9:
-                self.fish_frame_num = 5 #first right facing frame
-
 
 
         #clear up old image
@@ -401,6 +391,27 @@ class cpu_Fish(pygame.sprite.Sprite):
         #displays the main_rect fish frame and handles the updating of the frame count
         #at the topleft coordinates of the fish_rect of the instance of the fish
 
+        T = pygame.time.get_ticks()
+        if self.fish_direction == right:
+            #If the fish is facing left flip it immediately 
+            if self.fish_frame_num > 5:
+                self.fish_frame_num = 0
+            if T % 15 <= 1: #Take cycle skips into consideration
+                self.fish_frame_num += 1
+            if self.fish_frame_num >= 5:
+                self.fish_frame_num = 0
+                 #first left facing frame
+
+        elif self.fish_direction == left:
+            #If the fish is facing right flip it immediately 
+            if self.fish_frame_num < 5: 
+                self.fish_frame_num = 6
+            if T % 15 <= 1: #Take cycle skips into consideration
+                self.fish_frame_num += 1
+                if self.fish_frame_num >= 9:
+                    self.fish_frame_num = 5
+                 #first right facing frame
+        '''
         #frame handling 
         if self.fish_direction == right:
             self.fish_frame_num += 1
@@ -411,7 +422,7 @@ class cpu_Fish(pygame.sprite.Sprite):
             self.fish_frame_num += 1
             if self.fish_frame_num >= 9:
                 self.fish_frame_num = 5 #first right facing frame
-
+         '''
         bg2 = pygame.image.load(main_bg_file)
         bg2.fill((255,0,0)) #fills dirty with red to color to show how large rect is 
         #dirty rect calc to get dimensions of the background the sprite messed up
@@ -627,6 +638,29 @@ class Fish(pygame.sprite.Sprite):
         print('bg2.get rect'+str(bg2.get_rect()))
 
         '''
+
+        #frame handling 
+        T = pygame.time.get_ticks()
+        if self.fish_direction == right:
+            #If the fish is facing left flip it immediately 
+            if self.fish_frame_num > 5:
+                self.fish_frame_num = 0
+            if T % 15 <= 1: #Take cycle skips into consideration
+                self.fish_frame_num += 1
+            if self.fish_frame_num >= 5:
+                self.fish_frame_num = 0
+                 #first left facing frame
+
+        elif self.fish_direction == left:
+            #If the fish is facing right flip it immediately 
+            if self.fish_frame_num < 5: 
+                self.fish_frame_num = 6
+            if T % 15 <= 1: #Take cycle skips into consideration
+                self.fish_frame_num += 1
+                if self.fish_frame_num >= 9:
+                    self.fish_frame_num = 5
+                 #first right facing frame
+        '''
         #frame handling 
         if self.fish_direction == right:
             self.fish_frame_num += 1
@@ -637,7 +671,7 @@ class Fish(pygame.sprite.Sprite):
             self.fish_frame_num += 1
             if self.fish_frame_num >= 9:
                 self.fish_frame_num = 5 #first right facing frame
-
+        '''
 
 #        dirtyrect = bg2.subsurface(self.rect)
 
@@ -660,19 +694,20 @@ class Fish(pygame.sprite.Sprite):
             if cpuA > mainA:
                 self.alive = False
             else:
-                self.score += cpuA // 5
+                self.score += fishes.fish_score
                 self.fishes_eaten += 1
                 if len(self.scoreintervals) > 0:
                     if self.score >= self.scoreintervals[-1]:
                         self.grow()
                         self.scoreintervals.pop()
-                    
-                cpu_fishes.remove(fishes) #TODO: Need to redraw the background after deleting the fish
-                    #cpu_fishes.add(add_a_new_cpu(screen, available_sprites))
-                    #self.screen.blit(
                 x = fishes.f_x
                 y = fishes.f_y
-                fishes.screen.blit(main_bg,(x,y),pygame.Rect(x,y,fishes.f_w,fishes.f_h)) #Cover up the old fish with a slice of our background
+                bg2 = pygame.image.load(main_bg_file)
+                #Cover up the old fish with a slice of our background
+                rl.append(fishes.screen.blit(bg2,(x,y),pygame.Rect(x,y,fishes.f_w,fishes.f_h)))
+                fishes.screen.blit(bg2,(x,y),pygame.Rect(x,y,fishes.f_w,fishes.f_h)) 
+                cpu_fishes.remove(fishes) #Remove the old fish
+               
 
                 #a = self.screen.blit(fishes.fish_main_surf[fishes.fish_frame_num], fishes.rect.topleft)
                 #b = self.screen.blit(self.fish_main_surf[self.fish_frame_num], self.rect.topleft)
@@ -812,7 +847,7 @@ while True:
         # Bottom right: (305,293)
         for event in pygame.event.get(): # get events
             Mouse_pos = pygame.mouse.get_pos()
-            if 187 <= Mouse_pos[0] <= 257 and 257 <= Mouse_pos[1] <= 305: #If our mouse is on the button display the new button
+            if 187 <= Mouse_pos[0] <= 305 and 257 <= Mouse_pos[1] <= 305: #If our mouse is on the button display the new button
                 screen.blit(mouse_over_start,(186,258))
                 if event.type == MOUSEBUTTONDOWN: #check if they are mouse click
                     if event.button == 1: #check if it is a left button click
