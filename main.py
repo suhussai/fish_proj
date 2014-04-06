@@ -439,6 +439,7 @@ class Fish(pygame.sprite.Sprite):
         self.score = 0
         self.fishes_eaten = 0
         self.growscore = 0
+        self.alive = True
         self.scoreintervals = [150, 400, 750, 1200, 1750, 2400, 3150, 4000, 4950, 6000, 7150, 8400, 9750, 11200]
         self.scoreintervals.reverse()
         
@@ -627,8 +628,7 @@ class Fish(pygame.sprite.Sprite):
                 mainA = self.fish_main_rect.width * self.fish_main_rect.height
                 
                 if cpuA > mainA:
-                    GAMEOVER = True
-                    print('GAMEOVER')
+                    self.alive = False
                 else:
                     self.score += cpuA // 20
                     self.fishes_eaten += 1
@@ -677,12 +677,16 @@ background = pygame.image.load(bg_file)
 
 windowSize = [background.get_width(), background.get_height()]
 
-
 #load up main surface with the height and width of the starting background image
 screen = pygame.display.set_mode([windowSize[0], windowSize[1]], 0 , 32)
 
 main_bg_file = 'fishdish/game_bg.png' # for game screen background
-main_bg = pygame.image.load(main_bg_file)
+main_bg = pygame.image.load(main_bg_file).convert()
+game_windowSize = [main_bg.get_width(), main_bg.get_height()]
+
+
+game_over_image = 'fishdish/gameover.png'
+g_o = pygame.image.load(game_over_image).convert()
 
 pygame.init()
 
@@ -696,8 +700,8 @@ main_fish = pygame.sprite.Group()
 
 
 #initialize f as an instance of the main fish class
-#f = Fish(screen, '6main_fish')
-f = Fish(screen, 'yellow_fish')
+f = Fish(screen, '1main_fish')
+#f = Fish(screen, 'yellow_fish')
 
 fc = cpu_Fish_Controller(5, cpu_Fish)
 
@@ -766,8 +770,21 @@ while True:
         main_fish.update()
         rl = num_update(screen, rl, f.score, [70, 0], 30) 
         rl = num_update(screen, rl, f.fishes_eaten, [70, 25], 30) 
-        
-        pygame.display.update(rl)
+
+        if f.alive == False:
+            screen.blit(g_o, (game_windowSize[0]//2 - g_o.get_width()//2, game_windowSize[1]//2 - g_o.get_height()//2))
+            pygame.display.update()
+            while True:
+                for event in pygame.event.get():
+                    if event.type == pygame.MOUSEBUTTON
+
+                print(pygame.mouse.get_pos())
+                print((game_windowSize[0]//2 - g_o.get_width()//2, game_windowSize[1]//2 - g_o.get_height()//2))
+                if ((game_windowSize[0]//2 - g_o.get_width()//2, game_windowSize[1]//2 - g_o.get_height()//2) <= pygame.mouse.get_pos()
+                    <= (game_windowSize[0]  + g_o.get_width()//2, game_windowSize[1] + g_o.get_height()//2)):
+                    print("we got inside box mouse pos")
+
+        pygame.display.update(rl)    
         rl = []
 
 
