@@ -66,7 +66,26 @@ def num_update(screen, rect_list_to_passed_to_update, number, position, width_of
             r.append(screen.blit(s, (p[0] + w*i, p[1])))
             
     return r
+
+def game_reset():
+    cpu_fishes.empty()
+    main_fish.empty()
+
+    f = Fish(screen, '1main_fish')
+    main_fish.add(f)
+
+    fc = cpu_Fish_Controller(number_of_fishes_to_deploy, cpu_Fish)
+    main_bg_off = True
+
+#    screen = pygame.display.set_mode([windowSize[0], windowSize[1] + 50], 0 , 32)
+    screen.blit(main_bg, (0,0))
+    print('blitted main_bg')
+    pygame.display.update()
+    #            pygame.time.delay(1000)
+    main_bg_off = False
+
     
+    return f
 
 def number_to_picNumber(number):
     '''
@@ -135,6 +154,9 @@ class cpu_Fish_Controller():
         self.available_sprites = ['yellow_fish' , 'blue_fish', 'small_yellow_fish', 'green_fish', 'grey_fish', 'purple_fish', 'red_fish']
         self.available_sprites_scores = {'yellow_fish':200 , 'blue_fish':150, 'small_yellow_fish':30, 'green_fish':50, 'grey_fish':80, 'purple_fish':100, 'red_fish':10}
 
+        self.y_spots = [windowSize[1]*1//5, windowSize[1]*2//5, windowSize[1]*3//5, windowSize[1]*4//5]
+
+
         self.exreme_case_sprites = ['shark'] # ---> note we need to standardize shark
         self.cpu = [] 
         self.Cclass = CpuFishClass
@@ -163,7 +185,7 @@ class cpu_Fish_Controller():
 
             -----------------------------
             '''
-            self.cpu.append(self.Cclass(screen, sp_name, sp_direction, sp_score, sp_speed, None, random.uniform(num//windowSize[0], (num+0.5)//windowSize[0])))
+            self.cpu.append(self.Cclass(screen, sp_name, sp_direction, sp_score, sp_speed, None, self.y_spots[randint(0,len(self.y_spots)-1)]))
             
             #add to cpu fish group
             cpu_fishes.add(self.cpu[num])
@@ -190,9 +212,8 @@ class cpu_Fish_Controller():
                 
                 #create instance of class
                 #cpu[num] = cpu_Fish(screen, sp_name, sp_direction, sp_speed)
-            self.cpu.append(self.Cclass(screen, sp_name, sp_direction, sp_score,sp_speed, None, random.uniform((self.actual_num//windowSize[0])*100, ((self.actual_num+0.5)//windowSize[0])*100)))
+            self.cpu.append(self.Cclass(screen, sp_name, sp_direction, sp_score, sp_speed, None, self.y_spots[randint(0,len(self.y_spots)-1)]))
 
-            
                 #add to cpu fish group
             cpu_fishes.add(self.cpu[len(self.cpu)-1])
             
@@ -666,6 +687,8 @@ class Fish(pygame.sprite.Sprite):
     def grow(self):
         self.growscore = self.score
         print('need to grow-------------------------------------------')
+
+
         
 
 
@@ -688,6 +711,9 @@ game_windowSize = [main_bg.get_width(), main_bg.get_height()]
 game_over_image = 'fishdish/gameover.png'
 g_o = pygame.image.load(game_over_image).convert()
 
+game_over_image_clicked = 'fishdish/gameover_clicked.png'
+g_o2 = pygame.image.load(game_over_image_clicked).convert()
+
 pygame.init()
 
 pygame.display.set_caption("FISH GAME")
@@ -703,7 +729,8 @@ main_fish = pygame.sprite.Group()
 f = Fish(screen, '1main_fish')
 #f = Fish(screen, 'yellow_fish')
 
-fc = cpu_Fish_Controller(5, cpu_Fish)
+number_of_fishes_to_deploy = 5
+fc = cpu_Fish_Controller(number_of_fishes_to_deploy, cpu_Fish)
 
 main_fish.add(f)
 
@@ -772,17 +799,22 @@ while True:
         rl = num_update(screen, rl, f.fishes_eaten, [70, 25], 30) 
 
         if f.alive == False:
-            screen.blit(g_o, (game_windowSize[0]//2 - g_o.get_width()//2, game_windowSize[1]//2 - g_o.get_height()//2))
+            r = (game_windowSize[0]//2 - g_o.get_width()//2, game_windowSize[1]//2 - g_o.get_height()//2)
+            screen.blit(g_o, r)
             pygame.display.update()
-            while True:
-                for event in pygame.event.get():
-                    if event.type == pygame.MOUSEBUTTON
-
-                print(pygame.mouse.get_pos())
-                print((game_windowSize[0]//2 - g_o.get_width()//2, game_windowSize[1]//2 - g_o.get_height()//2))
-                if ((game_windowSize[0]//2 - g_o.get_width()//2, game_windowSize[1]//2 - g_o.get_height()//2) <= pygame.mouse.get_pos()
-                    <= (game_windowSize[0]  + g_o.get_width()//2, game_windowSize[1] + g_o.get_height()//2)):
-                    print("we got inside box mouse pos")
+            while f.alive == False:
+                for event in pygame.event.get(): # get events
+                    if event.type == MOUSEBUTTONDOWN: #check if they are mouse click
+                        if event.button == 1: #check if it is a left button click
+                            m = pygame.mouse.get_pos() #get mouse pos everytime there is a click 
+                            if (r[0] <= m[0] <= (r[0]+200)) and (r[1] <= m[1] <= (r[1]+120)): #compare x and y separetly **important**
+#                                print("we got inside box mouse pos")
+                                screen.blit(g_o2, r)
+                                pygame.display.update()
+                                pygame.time.delay(2000)
+                                f = game_reset()
+                                print(f.alive)
+                                rl = []
 
         pygame.display.update(rl)    
         rl = []
