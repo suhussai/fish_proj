@@ -225,6 +225,8 @@ class cpu_Fish(pygame.sprite.Sprite):
     handles moving when given direction, drawing and overlapping with other 
     fishes of the same class and dirtyrect calculation is also functional
 
+    #important: changed all instances of fish_main_rect to rect
+
     '''
     
     def __init__(self, screen, fish_name, directionTo, fish_score, fish_speed = randint(0,10), x = None, y = 0, fish_width = 0, fish_height = 0):
@@ -293,6 +295,8 @@ class cpu_Fish(pygame.sprite.Sprite):
         #set width and height according to img width and height
         self.f_h = a.get_height()
         self.f_w = a.get_width()
+        self.radius = self.f_h*0.35 # for the collide_circle method
+
 #        print(self.f_h)
 #        print(self.f_w)
 
@@ -309,7 +313,7 @@ class cpu_Fish(pygame.sprite.Sprite):
         for frame in self.lfish_frame:
             self.fish_main_surf.append(frame)
 
-        self.fish_main_rect = self.fish_main_surf[0].get_rect()
+        self.rect = self.fish_main_surf[0].get_rect()
 
     def get_f_y(self):
         return self.f_y
@@ -342,22 +346,22 @@ class cpu_Fish(pygame.sprite.Sprite):
 #        bg2.fill((255,0,0)) #fills dirty with red to color to show how large rect is 
 
 
-        if self.fish_main_rect.bottomright[0] >= windowSize[0]:
+        if self.rect.bottomright[0] >= windowSize[0]:
             # for the case when the fish is gone
             # commenting this out will casuse error with dirty rect calculation
-            dirtyrect1 = bg2.subsurface((self.fish_main_rect[0], self.fish_main_rect[1], windowSize[0] - self.fish_main_rect[0], self.fish_main_rect[3]))
+            dirtyrect1 = bg2.subsurface((self.rect[0], self.rect[1], windowSize[0] - self.rect[0], self.rect[3]))
             rl.append(self.screen.blit(dirtyrect1, (self.f_x, self.f_y)))
 
 
-        elif self.fish_main_rect.left <= 0:
+        elif self.rect.left <= 0:
             # for the case when the fish is gone
             # commenting this out will casuse error with dirty rect calculation
-            dirtyrect1 = bg2.subsurface((0, self.f_y, self.fish_main_rect[2], self.fish_main_rect[3]))
+            dirtyrect1 = bg2.subsurface((0, self.f_y, self.rect[2], self.rect[3]))
             rl.append(self.screen.blit(dirtyrect1, (0, self.f_y)))
 
         else:
             #most common case for when the fish is somewhere in the middle
-            dirtyrect1 = bg2.subsurface(self.fish_main_rect) #grabs a piece surface from bg, the same length as fish rect
+            dirtyrect1 = bg2.subsurface(self.rect) #grabs a piece surface from bg, the same length as fish rect
            #and adds it to the update list rl
             rl.append(self.screen.blit(dirtyrect1, (self.f_x, self.f_y)))
            
@@ -388,7 +392,7 @@ class cpu_Fish(pygame.sprite.Sprite):
 #        self.f_x -= self.f_s * math.cos( (deg_to_rad(self.vector)))
 #        self.f_y -= self.f_s * math.sin( (deg_to_rad(self.vector)))
 
-        self.fish_main_rect.topleft = (self.f_x, self.f_y)
+        self.rect.topleft = (self.f_x, self.f_y)
 
         self.blito()
             
@@ -428,20 +432,21 @@ class cpu_Fish(pygame.sprite.Sprite):
 
         # this should handle overlapping for cpu fishes amonst each other
         #...
-        for fishes in cpu_fishes.sprites():
-            if (self.fish_main_rect.colliderect(fishes.fish_main_rect)):
-#                rl.remove(fishes.fish_main_rect) # remove that #no need to remove !!!
-#                rl.remove(self.fish_main_rect) # no need to remove
+#        for fishes in cpu_fishes.sprites():
+#            if (self.fish_main_rect.colliderect(fishes.fish_main_rect)):
+        for fishes in pygame.sprite.spritecollide(self, cpu_fishes, False, pygame.sprite.collide_circle):
+#                rl.remove(fishes.rect) # remove that #no need to remove !!!
+#                rl.remove(self.rect) # no need to remove
 
-                a = self.screen.blit(fishes.fish_main_surf[fishes.fish_frame_num], fishes.fish_main_rect.topleft)
-                b = self.screen.blit(self.fish_main_surf[self.fish_frame_num], self.fish_main_rect.topleft)
-                rl.append(a)
-                rl.append(b)
+            a = self.screen.blit(fishes.fish_main_surf[fishes.fish_frame_num], fishes.rect.topleft)
+            b = self.screen.blit(self.fish_main_surf[self.fish_frame_num], self.rect.topleft)
+            rl.append(a)
+            rl.append(b)
 
 
 
-        self.fish_main_rect = self.screen.blit(self.fish_main_surf[self.fish_frame_num], self.fish_main_rect.topleft) #update pos of fish
-        rl.append(self.fish_main_rect) # this appends the rectangle that's got the fish on it
+        self.rect = self.screen.blit(self.fish_main_surf[self.fish_frame_num], self.rect.topleft) #update pos of fish
+        rl.append(self.rect) # this appends the rectangle that's got the fish on it
 
 #        print("done updating cpu fish")
 #        print(self.f_n)
@@ -501,8 +506,9 @@ class Fish(pygame.sprite.Sprite):
         #set width and height according to img width and height
         self.f_h = a.get_height()
         self.f_w = a.get_width()
-        print(self.f_h)
-        print(self.f_w)
+        self.radius = self.f_h*0.35 # for the collide_circle method
+#        print(self.f_h)
+#        print(self.f_w)
 
 
         self.fish_frame_num = 0 #initialize fish frame count to zero
@@ -516,7 +522,7 @@ class Fish(pygame.sprite.Sprite):
         for frame in self.lfish_frame:
             self.fish_main_surf.append(frame)
 
-        self.fish_main_rect = self.fish_main_surf[0].get_rect()
+        self.rect = self.fish_main_surf[0].get_rect()
 
 
     def update(self, direction_of_movement = 0):
@@ -531,7 +537,7 @@ class Fish(pygame.sprite.Sprite):
 #        bg2.fill((255,0,0)) #fills dirty with red to color to show how large rect is 
 
         #blit 
-        dirtyrect1 = bg2.subsurface(self.fish_main_rect)
+        dirtyrect1 = bg2.subsurface(self.rect)
         rl.append(self.screen.blit(dirtyrect1, (self.f_x, self.f_y)))
 
 
@@ -550,9 +556,9 @@ class Fish(pygame.sprite.Sprite):
         # the bottom would bound the fish to the bounds of the window
 #        self.f_x = squeeze(self.f_x, windowSize[0] - self.f_w, self.f_w)
 
-        self.fish_main_rect.topleft = (self.f_x, self.f_y)
+        self.rect.topleft = (self.f_x, self.f_y)
 
-        var = self.fish_main_rect
+        var = self.rect
 
         # the bottom four cases handle the fish's 
         # going off the edge and coming out from the opposite sides
@@ -567,7 +573,7 @@ class Fish(pygame.sprite.Sprite):
         if (var[1] + var[3]) > windowSize[1]:
             #self.f_x = (var[0] + var[2]) % windowSize[0]
             self.f_y = (var[1] + var[3]) % windowSize[1]
-            self.fish_main_rect.topleft = (self.f_x, self.f_y)
+            self.rect.topleft = (self.f_x, self.f_y)
 
             print('it came from above!!!')
 
@@ -575,20 +581,20 @@ class Fish(pygame.sprite.Sprite):
         if (var[0]) < 0:
             self.f_x =  windowSize[0] - var[2]
             #self.f_y = (var[1] + var[3]) % windowSize[1]
-            self.fish_main_rect.topleft = (self.f_x, self.f_y)
+            self.rect.topleft = (self.f_x, self.f_y)
 
             print('it left from the x side')
         '''
         if (var[1]) < 0:
             #self.f_x = (var[0] + var[2]) % windowSize[0]
             self.f_y =  windowSize[1] - var[3]
-            self.fish_main_rect.topleft = (self.f_x, self.f_y)
+            self.rect.topleft = (self.f_x, self.f_y)
 
             print('it came from above!!!')
         '''
 
         self.f_y = squeeze(self.f_y, windowSize[1], self.f_h)
-        self.fish_main_rect.topleft = (self.f_x, self.f_y)
+        self.rect.topleft = (self.f_x, self.f_y)
 
     
         self.blito()
@@ -602,7 +608,7 @@ class Fish(pygame.sprite.Sprite):
 #        bg2.fill((255,0,0)) #fills dirty with red to color to show how large rect is 
 
         #blit 
-#        dirtyrect1 = bg2.subsurface(self.fish_main_rect)
+#        dirtyrect1 = bg2.subsurface(self.rect)
 #        self.screen.blit(dirtyrect1, (self.f_x, self_f_y))
         #dirty rect calc to get dimensions of the background the sprite messed up
         # calculate clean rect
@@ -615,9 +621,9 @@ class Fish(pygame.sprite.Sprite):
 
         print('fish x coords' + str(self.f_x))
         print('fish y coords' + str(self.f_y))
-        print('fish rect coords' + str(self.fish_main_rect))
-        print('fish rect coords left' + str(self.fish_main_rect.right))
-        print('fish rect coords right' + str(self.fish_main_rect.left))
+        print('fish rect coords' + str(self.rect))
+        print('fish rect coords left' + str(self.rect.right))
+        print('fish rect coords right' + str(self.rect.left))
         print('bg2.get rect'+str(bg2.get_rect()))
 
         '''
@@ -633,47 +639,50 @@ class Fish(pygame.sprite.Sprite):
                 self.fish_frame_num = 5 #first right facing frame
 
 
-#        dirtyrect = bg2.subsurface(self.fish_main_rect)
+#        dirtyrect = bg2.subsurface(self.rect)
 
         # we need to do some editions to the fish rect when calculating the dirty rect around 
         # this is to ensure that no traces of the fish get eft on
         # and then we blit it on before the sprite
-#        self.screen.blit(dirtyrect, (self.fish_main_rect.topleft[0], self.fish_main_rect.topleft[1]))
+#        self.screen.blit(dirtyrect, (self.rect.topleft[0], self.rect.topleft[1]))
         # blit clean rect on top of "dirty" screen
 
-        for fishes in cpu_fishes.sprites():
-            if (self.fish_main_rect.colliderect(fishes.fish_main_rect)):
-#                rl.remove(fishes.fish_main_rect) # remove that #no need to remove !!!
-#                rl.remove(self.fish_main_rect) # no need to remove
-                cpuA = fishes.fish_main_rect.width * fishes.fish_main_rect.height
-                mainA = self.fish_main_rect.width * self.fish_main_rect.height
+#        for fishes in cpu_fishes.sprites():
+#            if (self.rect.colliderect(fishes.rect)):
+#                rl.remove(fishes.rect) # remove that #no need to remove !!!
+#                rl.remove(self.rect) # no need to remove
+
+        for fishes in pygame.sprite.spritecollide(self, cpu_fishes, False, pygame.sprite.collide_circle):
+
+            cpuA = fishes.rect.width * fishes.rect.height
+            mainA = self.rect.width * self.rect.height
                 
-                if cpuA > mainA:
-                    self.alive = False
-                else:
-                    self.score += cpuA // 5
-                    self.fishes_eaten += 1
-                    if len(self.scoreintervals) > 0:
-                        if self.score >= self.scoreintervals[-1]:
-                            self.grow()
-                            self.scoreintervals.pop()
+            if cpuA > mainA:
+                self.alive = False
+            else:
+                self.score += cpuA // 5
+                self.fishes_eaten += 1
+                if len(self.scoreintervals) > 0:
+                    if self.score >= self.scoreintervals[-1]:
+                        self.grow()
+                        self.scoreintervals.pop()
                     
-                    cpu_fishes.remove(fishes) #TODO: Need to redraw the background after deleting the fish
+                cpu_fishes.remove(fishes) #TODO: Need to redraw the background after deleting the fish
                     #cpu_fishes.add(add_a_new_cpu(screen, available_sprites))
                     #self.screen.blit(
-                    x = fishes.f_x
-                    y = fishes.f_y
-                    fishes.screen.blit(main_bg,(x,y),pygame.Rect(x,y,fishes.f_w,fishes.f_h)) #Cover up the old fish with a slice of our background
+                x = fishes.f_x
+                y = fishes.f_y
+                fishes.screen.blit(main_bg,(x,y),pygame.Rect(x,y,fishes.f_w,fishes.f_h)) #Cover up the old fish with a slice of our background
 
-                #a = self.screen.blit(fishes.fish_main_surf[fishes.fish_frame_num], fishes.fish_main_rect.topleft)
-                #b = self.screen.blit(self.fish_main_surf[self.fish_frame_num], self.fish_main_rect.topleft)
+                #a = self.screen.blit(fishes.fish_main_surf[fishes.fish_frame_num], fishes.rect.topleft)
+                #b = self.screen.blit(self.fish_main_surf[self.fish_frame_num], self.rect.topleft)
 
                 #rl.append(a)
                 #rl.append(b)
 #                print("done magic " + str(self.f_n))
 
-        self.fish_main_rect = self.screen.blit(self.fish_main_surf[self.fish_frame_num], self.fish_main_rect.topleft) #update pos of fish
-        rl.append(self.fish_main_rect)# this appends the rectangle that's got the fish on it
+        self.rect = self.screen.blit(self.fish_main_surf[self.fish_frame_num], self.rect.topleft) #update pos of fish
+        rl.append(self.rect)# this appends the rectangle that's got the fish on it
 
 
     def keys_pressed(self, k):
@@ -885,9 +894,3 @@ while True:
 
         pygame.display.update(rl)    
         rl = []
-
-
-
-        
-
-        
