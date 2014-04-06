@@ -21,7 +21,8 @@ Description:
     		  2: NPC fish are randomly spawned with a random speed
     		  3: If the player touches a fish larger than itself he loses
     		  4: The player can absord objects smaller than itself in order to get larger
-    		  5: There is no ultimate goal, Try to get the highest score!
+		  5: The player gets larger at certain score intervals
+    		  6: There is no ultimate goal, Try to get the highest score!
 
 
 Controls: Keyboard:
