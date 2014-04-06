@@ -71,7 +71,7 @@ def game_reset():
     cpu_fishes.empty()
     main_fish.empty()
 
-    f = Fish(screen, '1main_fish')
+    f = Fish(screen, 'main_fish')
     main_fish.add(f)
 
     fc = cpu_Fish_Controller(number_of_fishes_to_deploy, cpu_Fish)
@@ -435,10 +435,9 @@ class cpu_Fish(pygame.sprite.Sprite):
 
                 a = self.screen.blit(fishes.fish_main_surf[fishes.fish_frame_num], fishes.fish_main_rect.topleft)
                 b = self.screen.blit(self.fish_main_surf[self.fish_frame_num], self.fish_main_rect.topleft)
-
                 rl.append(a)
                 rl.append(b)
-#                print("done magic " + str(self.f_n))
+
 
 
         self.fish_main_rect = self.screen.blit(self.fish_main_surf[self.fish_frame_num], self.fish_main_rect.topleft) #update pos of fish
@@ -463,6 +462,7 @@ class Fish(pygame.sprite.Sprite):
         self.alive = True
         self.scoreintervals = [150, 400, 750, 1200, 1750, 2400, 3150, 4000, 4950, 6000, 7150, 8400, 9750, 11200]
         self.scoreintervals.reverse()
+        self.currentImage = 1 #controller variable to replace our fish image when a certain size is reached
         
         #we use the same fish naming standards as before
         self.f_n = fish_name
@@ -485,11 +485,11 @@ class Fish(pygame.sprite.Sprite):
         # load up all frames 
         # start by loading in the five left frames
         # then to get right, we simply flip them 
-        a = pygame.image.load('fishdish/' + str(self.f_n) + '_left_1.png').convert_alpha()
-        b = pygame.image.load('fishdish/' + str(self.f_n) + '_left_2.png').convert_alpha()                  
-        c = pygame.image.load('fishdish/' + str(self.f_n) + '_left_3.png').convert_alpha()
-        d = pygame.image.load('fishdish/' + str(self.f_n) + '_left_4.png').convert_alpha()
-        e = pygame.image.load('fishdish/' + str(self.f_n) + '_left_5.png').convert_alpha()
+        a = pygame.image.load('fishdish/' + str(self.currentImage)+ str(self.f_n) + '_left_1.png').convert_alpha()
+        b = pygame.image.load('fishdish/' + str(self.currentImage)+ str(self.f_n) + '_left_2.png').convert_alpha()                  
+        c = pygame.image.load('fishdish/' + str(self.currentImage)+ str(self.f_n) + '_left_3.png').convert_alpha()
+        d = pygame.image.load('fishdish/' + str(self.currentImage)+ str(self.f_n) + '_left_4.png').convert_alpha()
+        e = pygame.image.load('fishdish/' + str(self.currentImage)+ str(self.f_n) + '_left_5.png').convert_alpha()
         self.lfish_frame = [a,b,c,d,e]
 
         self.rfish_frame = [pygame.transform.flip(a, True, False),
@@ -651,21 +651,25 @@ class Fish(pygame.sprite.Sprite):
                 if cpuA > mainA:
                     self.alive = False
                 else:
-                    self.score += cpuA // 20
+                    self.score += cpuA // 5
                     self.fishes_eaten += 1
-                    if self.score % 10000 <= 200 and self.growscore != self.score:
-                        self.grow()
-                    Need_to_remove = fishes
-                    cpu_fishes.remove(Need_to_remove) #TODO: Need to redraw the background after deleting the fish
+                    if len(self.scoreintervals) > 0:
+                        if self.score >= self.scoreintervals[-1]:
+                            self.grow()
+                            self.scoreintervals.pop()
+                    
+                    cpu_fishes.remove(fishes) #TODO: Need to redraw the background after deleting the fish
                     #cpu_fishes.add(add_a_new_cpu(screen, available_sprites))
                     #self.screen.blit(
+                    x = fishes.f_x
+                    y = fishes.f_y
+                    fishes.screen.blit(main_bg,(x,y),pygame.Rect(x,y,fishes.f_w,fishes.f_h)) #Cover up the old fish with a slice of our background
 
+                #a = self.screen.blit(fishes.fish_main_surf[fishes.fish_frame_num], fishes.fish_main_rect.topleft)
+                #b = self.screen.blit(self.fish_main_surf[self.fish_frame_num], self.fish_main_rect.topleft)
 
-                a = self.screen.blit(fishes.fish_main_surf[fishes.fish_frame_num], fishes.fish_main_rect.topleft)
-                b = self.screen.blit(self.fish_main_surf[self.fish_frame_num], self.fish_main_rect.topleft)
-
-                rl.append(a)
-                rl.append(b)
+                #rl.append(a)
+                #rl.append(b)
 #                print("done magic " + str(self.f_n))
 
         self.fish_main_rect = self.screen.blit(self.fish_main_surf[self.fish_frame_num], self.fish_main_rect.topleft) #update pos of fish
@@ -688,7 +692,51 @@ class Fish(pygame.sprite.Sprite):
         self.growscore = self.score
         print('need to grow-------------------------------------------')
 
+        #self.lfish_frame = [a,b,c,d,e]
+        '''
+        lframepos = 0
+        self.rfish_frame = []
+        for frame in list(self.lfish_frame):
+            frame = pygame.transform.smoothscale(frame,(self.f_w,self.f_h))
+            self.lfish_frame[lframepos] = frame
+            self.rfish_frame.append(pygame.transform.flip(frame, True, False))
+            lframepos = lframepos + 1
 
+
+        self.fish_main_surf = []
+
+        for frame in self.rfish_frame:
+            self.fish_main_surf.append(frame)
+        for frame in self.lfish_frame:
+            self.fish_main_surf.append(frame)
+            '''
+        self.currentImage += 1
+        
+        a = pygame.image.load('fishdish/' + str(self.currentImage)+ str(self.f_n) + '_left_1.png').convert_alpha()
+        b = pygame.image.load('fishdish/' + str(self.currentImage)+ str(self.f_n) + '_left_2.png').convert_alpha()                  
+        c = pygame.image.load('fishdish/' + str(self.currentImage)+ str(self.f_n) + '_left_3.png').convert_alpha()
+        d = pygame.image.load('fishdish/' + str(self.currentImage)+ str(self.f_n) + '_left_4.png').convert_alpha()
+        e = pygame.image.load('fishdish/' + str(self.currentImage)+ str(self.f_n) + '_left_5.png').convert_alpha()
+        self.lfish_frame = [a,b,c,d,e]
+
+        self.rfish_frame = [pygame.transform.flip(a, True, False),
+                            pygame.transform.flip(b, True, False),
+                            pygame.transform.flip(c, True, False),
+                            pygame.transform.flip(d, True, False),
+                            pygame.transform.flip(e, True, False)]
+
+        #set width and height according to img width and height
+        self.f_h = a.get_height()
+        self.f_w = a.get_width()
+        print(self.currentImage)
+        #print(self.f_h)
+        #print(self.f_w)
+        self.fish_main_surf = []
+
+        for frame in self.rfish_frame:
+            self.fish_main_surf.append(frame)
+        for frame in self.lfish_frame:
+            self.fish_main_surf.append(frame)
         
 
 
@@ -696,6 +744,9 @@ rl = []
 
 bg_file = 'fishdish/fishtitle.png' # for starting screen background
 background = pygame.image.load(bg_file)
+
+bg_file_mouse_over_start = 'fishdish/shark_left.png'
+mouse_over_start = pygame.image.load(bg_file_mouse_over_start)
 
 
 windowSize = [background.get_width(), background.get_height()]
@@ -726,7 +777,7 @@ main_fish = pygame.sprite.Group()
 
 
 #initialize f as an instance of the main fish class
-f = Fish(screen, '1main_fish')
+f = Fish(screen, 'main_fish')
 #f = Fish(screen, 'yellow_fish')
 
 number_of_fishes_to_deploy = 5
@@ -735,6 +786,7 @@ fc = cpu_Fish_Controller(number_of_fishes_to_deploy, cpu_Fish)
 main_fish.add(f)
 
 start_screen = True
+start_screen_no_mouse = True #Controller variable to reload menu screen(erase new button) when mouse is not over it
 game = False
             
 clock = pygame.time.Clock()
@@ -743,9 +795,26 @@ clock = pygame.time.Clock()
 while True:
     if start_screen:
         #display the starting screen background
-        screen.blit(background,(0,0))
+        if start_screen_no_mouse:
+            screen.blit(background,(0,0))
+            start_screen_no_mouse = False
         pygame.display.update()
-        main_bg_off = True
+        # Top left : (187,257)
+        # Bottom right: (305,293)
+        for event in pygame.event.get(): # get events
+            Mouse_pos = pygame.mouse.get_pos()
+            if 187 <= Mouse_pos[0] <= 257 and 257 <= Mouse_pos[1] <= 305: #If our mouse is on the button display the new button
+                print("yes")
+                screen.blit(mouse_over_start,(187,257))
+                if event.type == MOUSEBUTTONDOWN: #check if they are mouse click
+                    if event.button == 1: #check if it is a left button click
+                        start_screen = False
+                        game = True
+                        main_bg_off = True
+            else: 
+                start_screen_no_mouse = True
+
+           
 
     if game:
 
@@ -757,7 +826,6 @@ while True:
 #            pygame.time.delay(1000)
             main_bg_off = False
         f.keys_pressed(pygame.key.get_pressed())
-        print(f.score)
     for event in pygame.event.get():
         
         #main game loop 
