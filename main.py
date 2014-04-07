@@ -43,8 +43,8 @@ def num_update(screen, rect_list_to_passed_to_update, number, position, width_of
     updates the score counter in the top left-hand corner
     by updating the list of rectangles to pass into pygame.display.update()
     note: updates numbers horizontally i.e [ 2 ] [ 0 ] 
-                                           as opposed to  [ 2 ] 
-                                                          [ 0 ]
+                            as opposed to  [ 2 ] 
+                                           [ 0 ]
 
     position must be a list of coords x and y
     where x and y dictate where in the screen you want to put the number
@@ -79,7 +79,6 @@ def game_reset():
 
 #    screen = pygame.display.set_mode([windowSize[0], windowSize[1] + 50], 0 , 32)
     screen.blit(main_bg, (0,0))
-    print('blitted main_bg')
     pygame.display.update()
     #            pygame.time.delay(1000)
     main_bg_off = False
@@ -173,18 +172,6 @@ class cpu_Fish_Controller():
             sp_score = self.available_sprites_scores[sp_name]
 
 
-            #create instance of class
-#            cpu[num] = cpu_Fish(screen, sp_name, sp_direction, sp_speed)
-
-            '''
-            screen is:
-            -----------------------------
-
-
-
-
-            -----------------------------
-            '''
             self.cpu.append(self.Cclass(screen, sp_name, sp_direction, sp_score, sp_speed, None, self.y_spots[randint(0,len(self.y_spots)-1)]))
             
             #add to cpu fish group
@@ -194,7 +181,6 @@ class cpu_Fish_Controller():
         self.actual_num = len(cpu_fishes.sprites()) #update count
 
         if self.actual_num < self.num:
-            print('adding one')
                 #for each instance we randomly generate 
                 #all important characteristics of the cpu fish
 
@@ -211,7 +197,6 @@ class cpu_Fish_Controller():
                 # don't exactly know if that makes it better or not
                 
                 #create instance of class
-                #cpu[num] = cpu_Fish(screen, sp_name, sp_direction, sp_speed)
             self.cpu.append(self.Cclass(screen, sp_name, sp_direction, sp_score, sp_speed, None, self.y_spots[randint(0,len(self.y_spots)-1)]))
 
                 #add to cpu fish group
@@ -258,16 +243,6 @@ class cpu_Fish(pygame.sprite.Sprite):
 
         self.f_y = y + 50
 
-
-        '''
-        self.vector = randint(0,360) #Pick a random direction (in degrees)
-        if self.vector >= 90 and self.vector <= 270:
-            self.fish_direction = right #everything is backwards (keep in mind)
-        else:
-            self.fish_direction = left
-
-        '''
-
         #starting width and height of fish
         self.f_h = fish_height
         self.f_w = fish_width
@@ -297,10 +272,6 @@ class cpu_Fish(pygame.sprite.Sprite):
         self.f_w = a.get_width()
         self.radius = self.f_h*0.35 # for the collide_circle method
 
-#        print(self.f_h)
-#        print(self.f_w)
-
-
         self.fish_frame_num = 0 #initialize fish frame count to zero
 
 
@@ -326,14 +297,8 @@ class cpu_Fish(pygame.sprite.Sprite):
         # 1: from left to right
         # 2: from right to left
 
-
-
-
         #clear up old image
         bg2 = pygame.image.load(main_bg_file)
-#        print(bg2.get_width())
-#        print(bg2.get_height())
-#        bg2.fill((255,0,0)) #fills dirty with red to color to show how large rect is 
 
 
         if self.rect.bottomright[0] >= windowSize[0]:
@@ -366,22 +331,6 @@ class cpu_Fish(pygame.sprite.Sprite):
         elif d == left:
             self.f_x -= self.f_s
 
-
-#        print(d)
-#        print("the above is the way the fish is going ")
-        '''
-        Note: we do not need to further complicate the cpu_Fish class
-        in the original game, the fishes just come from either the -x direction and goes to the left
-        or it comes from the +x direction and goes to the right
-        
-        what we can vary are the following parameters(not definitive):
-        - y coordinate (once chosen, stays constant)
-        - speed
-        - fish type (I guess...)
-        '''
-#        self.f_x -= self.f_s * math.cos( (deg_to_rad(self.vector)))
-#        self.f_y -= self.f_s * math.sin( (deg_to_rad(self.vector)))
-
         self.rect.topleft = (self.f_x, self.f_y)
 
         self.blito()
@@ -411,56 +360,32 @@ class cpu_Fish(pygame.sprite.Sprite):
                 if self.fish_frame_num >= 9:
                     self.fish_frame_num = 5
                  #first right facing frame
-        '''
-        #frame handling 
-        if self.fish_direction == right:
-            self.fish_frame_num += 1
-            if self.fish_frame_num >= 5:
-                self.fish_frame_num = 0 #first right facing frame
-
-        elif self.fish_direction == left:
-            self.fish_frame_num += 1
-            if self.fish_frame_num >= 9:
-                self.fish_frame_num = 5 #first right facing frame
-         '''
-        bg2 = pygame.image.load(main_bg_file)
-        bg2.fill((255,0,0)) #fills dirty with red to color to show how large rect is 
-        #dirty rect calc to get dimensions of the background the sprite messed up
-        # calculate clean rect
 
 
-        if (self.f_x > windowSize[0] + 50):
+        if (self.f_x > windowSize[0] + 250):
             #fish is gawwn dude ...to the right
             if cpu_fishes.has(self):
                 #kill the sprite!!!
                 cpu_fishes.remove(self)
 
-        if (self.f_x < - 50): 
+        if (self.f_x < - 250): 
             #fish is gawwn dude ...to the left
             if cpu_fishes.has(self):
                 #kill the sprite!!!
                 cpu_fishes.remove(self)
 
         # this should handle overlapping for cpu fishes amonst each other
-        #...
-#        for fishes in cpu_fishes.sprites():
-#            if (self.fish_main_rect.colliderect(fishes.fish_main_rect)):
-        for fishes in pygame.sprite.spritecollide(self, cpu_fishes, False, pygame.sprite.collide_circle):
-#                rl.remove(fishes.rect) # remove that #no need to remove !!!
-#                rl.remove(self.rect) # no need to remove
 
-            a = self.screen.blit(fishes.fish_main_surf[fishes.fish_frame_num], fishes.rect.topleft)
-            b = self.screen.blit(self.fish_main_surf[self.fish_frame_num], self.rect.topleft)
-            rl.append(a)
-            rl.append(b)
-
-
+        for fishes in cpu_fishes.sprites():
+            if (self.rect.colliderect(fishes.rect)):
+#        for fishes in pygame.sprite.spritecollide(self, cpu_fishes, False, pygame.sprite.collide_circle):
+                a = self.screen.blit(fishes.fish_main_surf[fishes.fish_frame_num], fishes.rect.topleft)
+                b = self.screen.blit(self.fish_main_surf[self.fish_frame_num], self.rect.topleft)
+                rl.append(a)
+                rl.append(b)
 
         self.rect = self.screen.blit(self.fish_main_surf[self.fish_frame_num], self.rect.topleft) #update pos of fish
         rl.append(self.rect) # this appends the rectangle that's got the fish on it
-
-#        print("done updating cpu fish")
-#        print(self.f_n)
 
 
 class Fish(pygame.sprite.Sprite):
@@ -477,6 +402,7 @@ class Fish(pygame.sprite.Sprite):
         self.growscore = 0
         self.alive = True
         self.scoreintervals = [150, 400, 750, 1200, 1750, 2400, 3150, 4000, 4950, 6000, 7150, 8400, 9750, 11200]
+        self.scoreintervals = [a//10 for a in self.scoreintervals]
         self.scoreintervals.reverse()
         self.currentImage = 1 #controller variable to replace our fish image when a certain size is reached
         
@@ -518,8 +444,6 @@ class Fish(pygame.sprite.Sprite):
         self.f_h = a.get_height()
         self.f_w = a.get_width()
         self.radius = self.f_h*0.35 # for the collide_circle method
-#        print(self.f_h)
-#        print(self.f_w)
 
 
         self.fish_frame_num = 0 #initialize fish frame count to zero
@@ -545,7 +469,6 @@ class Fish(pygame.sprite.Sprite):
 
         #clear up old image
         bg2 = pygame.image.load(main_bg_file)
-#        bg2.fill((255,0,0)) #fills dirty with red to color to show how large rect is 
 
         #blit 
         dirtyrect1 = bg2.subsurface(self.rect)
@@ -564,45 +487,24 @@ class Fish(pygame.sprite.Sprite):
             self.f_y += self.f_s
 
 
-        # the bottom would bound the fish to the bounds of the window
-#        self.f_x = squeeze(self.f_x, windowSize[0] - self.f_w, self.f_w)
-
         self.rect.topleft = (self.f_x, self.f_y)
 
         var = self.rect
 
-        # the bottom four cases handle the fish's 
+        # the bottom 2 cases handle the fish's 
         # going off the edge and coming out from the opposite sides
 
+        # to make the fish come forth from the the left
+        # side when it goes through the right side 
         if (var[0] + var[2]) > windowSize[0]:
             self.f_x = (var[0] + var[2]) % windowSize[0]
             #self.f_y = (var[1] + var[3]) % windowSize[1]
 
-            print('it left from the x side')
 
-        '''
-        if (var[1] + var[3]) > windowSize[1]:
-            #self.f_x = (var[0] + var[2]) % windowSize[0]
-            self.f_y = (var[1] + var[3]) % windowSize[1]
-            self.rect.topleft = (self.f_x, self.f_y)
-
-            print('it came from above!!!')
-
-        '''
+        # to make the fish come from the right when it goes through the left
         if (var[0]) < 0:
             self.f_x =  windowSize[0] - var[2]
-            #self.f_y = (var[1] + var[3]) % windowSize[1]
             self.rect.topleft = (self.f_x, self.f_y)
-
-            print('it left from the x side')
-        '''
-        if (var[1]) < 0:
-            #self.f_x = (var[0] + var[2]) % windowSize[0]
-            self.f_y =  windowSize[1] - var[3]
-            self.rect.topleft = (self.f_x, self.f_y)
-
-            print('it came from above!!!')
-        '''
 
         self.f_y = squeeze(self.f_y, windowSize[1], self.f_h)
         self.rect.topleft = (self.f_x, self.f_y)
@@ -612,32 +514,6 @@ class Fish(pygame.sprite.Sprite):
             
 
     def blito(self):
-        #displays the main_rect fish frame and handles the updating of the frame count
-        #at the topleft coordinates of the fish_rect of the instance of the fish
-
-#        bg2 = pygame.image.load(main_bg_file)
-#        bg2.fill((255,0,0)) #fills dirty with red to color to show how large rect is 
-
-        #blit 
-#        dirtyrect1 = bg2.subsurface(self.rect)
-#        self.screen.blit(dirtyrect1, (self.f_x, self_f_y))
-        #dirty rect calc to get dimensions of the background the sprite messed up
-        # calculate clean rect
-
-#        dirtyrect = bg2.subsurface((abs(self.f_x - self.f_w//2), abs(self.f_y - self.f_h//2), abs(self.f_w*2), abs(self.f_h*2)))  # old
-
-
-        '''
-        print('windowSize' + str(windowSize))
-
-        print('fish x coords' + str(self.f_x))
-        print('fish y coords' + str(self.f_y))
-        print('fish rect coords' + str(self.rect))
-        print('fish rect coords left' + str(self.rect.right))
-        print('fish rect coords right' + str(self.rect.left))
-        print('bg2.get rect'+str(bg2.get_rect()))
-
-        '''
 
         #frame handling 
         T = pygame.time.get_ticks()
@@ -660,31 +536,6 @@ class Fish(pygame.sprite.Sprite):
                 if self.fish_frame_num >= 9:
                     self.fish_frame_num = 5
                  #first right facing frame
-        '''
-        #frame handling 
-        if self.fish_direction == right:
-            self.fish_frame_num += 1
-            if self.fish_frame_num >= 5:
-                self.fish_frame_num = 0 #first right facing frame
-
-        elif self.fish_direction == left:
-            self.fish_frame_num += 1
-            if self.fish_frame_num >= 9:
-                self.fish_frame_num = 5 #first right facing frame
-        '''
-
-#        dirtyrect = bg2.subsurface(self.rect)
-
-        # we need to do some editions to the fish rect when calculating the dirty rect around 
-        # this is to ensure that no traces of the fish get eft on
-        # and then we blit it on before the sprite
-#        self.screen.blit(dirtyrect, (self.rect.topleft[0], self.rect.topleft[1]))
-        # blit clean rect on top of "dirty" screen
-
-#        for fishes in cpu_fishes.sprites():
-#            if (self.rect.colliderect(fishes.rect)):
-#                rl.remove(fishes.rect) # remove that #no need to remove !!!
-#                rl.remove(self.rect) # no need to remove
 
         for fishes in pygame.sprite.spritecollide(self, cpu_fishes, False, pygame.sprite.collide_circle):
 
@@ -708,14 +559,6 @@ class Fish(pygame.sprite.Sprite):
                 fishes.screen.blit(bg2,(x,y),pygame.Rect(x,y,fishes.f_w,fishes.f_h)) 
                 cpu_fishes.remove(fishes) #Remove the old fish
                
-
-                #a = self.screen.blit(fishes.fish_main_surf[fishes.fish_frame_num], fishes.rect.topleft)
-                #b = self.screen.blit(self.fish_main_surf[self.fish_frame_num], self.rect.topleft)
-
-                #rl.append(a)
-                #rl.append(b)
-#                print("done magic " + str(self.f_n))
-
         self.rect = self.screen.blit(self.fish_main_surf[self.fish_frame_num], self.rect.topleft) #update pos of fish
         rl.append(self.rect)# this appends the rectangle that's got the fish on it
 
@@ -734,47 +577,56 @@ class Fish(pygame.sprite.Sprite):
 
     def grow(self):
         self.growscore = self.score
-        print('need to grow-------------------------------------------')
 
-        #self.lfish_frame = [a,b,c,d,e]
-        '''
-        lframepos = 0
-        self.rfish_frame = []
-        for frame in list(self.lfish_frame):
-            frame = pygame.transform.smoothscale(frame,(self.f_w,self.f_h))
-            self.lfish_frame[lframepos] = frame
-            self.rfish_frame.append(pygame.transform.flip(frame, True, False))
-            lframepos = lframepos + 1
-
-
-        self.fish_main_surf = []
-
-        for frame in self.rfish_frame:
-            self.fish_main_surf.append(frame)
-        for frame in self.lfish_frame:
-            self.fish_main_surf.append(frame)
-            '''
         self.currentImage += 1
-        
-        a = pygame.image.load('fishdish/' + str(self.currentImage)+ str(self.f_n) + '_left_1.png').convert_alpha()
-        b = pygame.image.load('fishdish/' + str(self.currentImage)+ str(self.f_n) + '_left_2.png').convert_alpha()                  
-        c = pygame.image.load('fishdish/' + str(self.currentImage)+ str(self.f_n) + '_left_3.png').convert_alpha()
-        d = pygame.image.load('fishdish/' + str(self.currentImage)+ str(self.f_n) + '_left_4.png').convert_alpha()
-        e = pygame.image.load('fishdish/' + str(self.currentImage)+ str(self.f_n) + '_left_5.png').convert_alpha()
-        self.lfish_frame = [a,b,c,d,e]
+        perform = True
+        if self.currentImage % 2 == 0 and self.currentImage < 8: # to make sure we dont end up looking for fish image number 8
+            # every even growing we replace image
+            a = pygame.image.load('fishdish/' + str(self.currentImage)+ str(self.f_n) + '_left_1.png').convert_alpha()
+            b = pygame.image.load('fishdish/' + str(self.currentImage)+ str(self.f_n) + '_left_2.png').convert_alpha()                  
+            c = pygame.image.load('fishdish/' + str(self.currentImage)+ str(self.f_n) + '_left_3.png').convert_alpha()
+            d = pygame.image.load('fishdish/' + str(self.currentImage)+ str(self.f_n) + '_left_4.png').convert_alpha()
+            e = pygame.image.load('fishdish/' + str(self.currentImage)+ str(self.f_n) + '_left_5.png').convert_alpha()
+            self.lfish_frame = [a,b,c,d,e]
 
-        self.rfish_frame = [pygame.transform.flip(a, True, False),
-                            pygame.transform.flip(b, True, False),
-                            pygame.transform.flip(c, True, False),
-                            pygame.transform.flip(d, True, False),
-                            pygame.transform.flip(e, True, False)]
+            self.rfish_frame = [pygame.transform.flip(a, True, False),
+                                pygame.transform.flip(b, True, False),
+                                pygame.transform.flip(c, True, False),
+                                pygame.transform.flip(d, True, False),
+                                pygame.transform.flip(e, True, False)]
 
         #set width and height according to img width and height
-        self.f_h = a.get_height()
-        self.f_w = a.get_width()
-        print(self.currentImage)
-        #print(self.f_h)
-        #print(self.f_w)
+            self.f_h = a.get_height()
+            self.f_w = a.get_width()
+
+        else:
+            # if it is odd or current image is greater than 8 than we just add 5 to image
+            # width and height and continue until game is done 
+            a = pygame.image.load('fishdish/7' + str(self.f_n) + '_left_1.png').convert_alpha()
+            b = pygame.image.load('fishdish/7' + str(self.f_n) + '_left_2.png').convert_alpha()                  
+            c = pygame.image.load('fishdish/7' + str(self.f_n) + '_left_3.png').convert_alpha()
+            d = pygame.image.load('fishdish/7' + str(self.f_n) + '_left_4.png').convert_alpha()
+            e = pygame.image.load('fishdish/7' + str(self.f_n) + '_left_5.png').convert_alpha()
+
+            self.f_h = self.f_h + 5
+            self.f_w = self.f_w + 5
+            [a, b, c, d, e] =  [pygame.transform.smoothscale(a, (self.f_h, self.f_w)),
+                                pygame.transform.smoothscale(b, (self.f_h, self.f_w)),
+                                pygame.transform.smoothscale(c, (self.f_h, self.f_w)),
+                                pygame.transform.smoothscale(d, (self.f_h, self.f_w)),
+                                pygame.transform.smoothscale(e, (self.f_h, self.f_w))]
+
+
+            self.lfish_frame = [a, b, c, d, e]
+
+
+            self.rfish_frame = [pygame.transform.flip(a, True, False),
+                                pygame.transform.flip(b, True, False),
+                                pygame.transform.flip(c, True, False),
+                                pygame.transform.flip(d, True, False),
+                                pygame.transform.flip(e, True, False)]
+
+
         self.fish_main_surf = []
 
         for frame in self.rfish_frame:
@@ -811,13 +663,11 @@ g_o2 = pygame.image.load(game_over_image_clicked).convert()
 
 pygame.init()
 
-pygame.display.set_caption("FISH GAME")
+pygame.display.set_caption("Fish Dish")
 
 #cpu fishes group
 cpu_fishes = pygame.sprite.Group()
 main_fish = pygame.sprite.Group()
-#cpu_fishes = pygame.sprite.RenderUpdates()
-#main_fish = pygame.sprite.RenderUpdates()
 
 
 #initialize f as an instance of the main fish class
@@ -864,9 +714,7 @@ while True:
         if main_bg_off:
             screen = pygame.display.set_mode([windowSize[0], windowSize[1] + 50], 0 , 32)
             screen.blit(main_bg, (0,0))
-            print('blitted main_bg')
             pygame.display.update()
-#            pygame.time.delay(1000)
             main_bg_off = False
         f.keys_pressed(pygame.key.get_pressed())
     for event in pygame.event.get():
@@ -919,12 +767,10 @@ while True:
                         if event.button == 1: #check if it is a left button click
                             m = pygame.mouse.get_pos() #get mouse pos everytime there is a click 
                             if (r[0] <= m[0] <= (r[0]+200)) and (r[1] <= m[1] <= (r[1]+120)): #compare x and y separetly **important**
-#                                print("we got inside box mouse pos")
                                 screen.blit(g_o2, r)
                                 pygame.display.update()
                                 pygame.time.delay(2000)
                                 f = game_reset()
-                                print(f.alive)
                                 rl = []
 
         pygame.display.update(rl)    
