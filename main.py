@@ -168,7 +168,8 @@ class cpu_Fish_Controller():
             i = randint(0, len(self.available_sprites)-1) # select random sprite from available sprites
             sp_name = self.available_sprites[i] #
             sp_direction = self.d[randint(0,1)] #randomly choose direction
-            sp_speed = random.random()*10 + 5 # generally between 5 and 15
+            sp_speed = random.random()*5 + 4
+            #sp_speed = random.uniform(3,5)
             sp_score = self.available_sprites_scores[sp_name]
 
 
@@ -187,7 +188,7 @@ class cpu_Fish_Controller():
             i = randint(0, len(self.available_sprites)-1) # select random sprite from available sprites
             sp_name = self.available_sprites[i] #
             sp_direction = self.d[randint(0,1)] #randomly choose direction
-            sp_speed = random.random()*10 + 5 # generally between 5 and 15
+            sp_speed = random.random()*5 + 4
             sp_score = self.available_sprites_scores[sp_name]
             
                 # noting that cpu fishes travelling across the same y coords
@@ -390,7 +391,7 @@ class cpu_Fish(pygame.sprite.Sprite):
 
 class Fish(pygame.sprite.Sprite):
     
-    def __init__(self,screen,  fish_name, fish_speed = 10, x = 200, y = 200, fish_width = 0, fish_height = 0):
+    def __init__(self,screen,  fish_name, fish_speed = 7, x = 200, y = 200, fish_width = 0, fish_height = 0):
 
 
         #initialze important variables
@@ -402,7 +403,7 @@ class Fish(pygame.sprite.Sprite):
         self.growscore = 0
         self.alive = True
         self.scoreintervals = [150, 400, 750, 1200, 1750, 2400, 3150, 4000, 4950, 6000, 7150, 8400, 9750, 11200]
-        self.scoreintervals = [a//10 for a in self.scoreintervals]
+        self.scoreintervals = [a//5 for a in self.scoreintervals] 
         self.scoreintervals.reverse()
         self.currentImage = 1 #controller variable to replace our fish image when a certain size is reached
         
@@ -746,7 +747,7 @@ while True:
             start_screen = False
             
             
-    clock.tick(15)
+    clock.tick(30)
 
     if game:
         #so we only update when we are past the starting screen 
